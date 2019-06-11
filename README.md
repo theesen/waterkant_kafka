@@ -36,6 +36,21 @@ docker-compose up --build -d
 docker-compose logs -f kafkaproducer
 ```
 > use kafkacat to consume messages (add command to documentation)  
+```sh
+#list topics & partitions
+docker run --tty \
+           --network waterkant_kafka_default \
+           confluentinc/cp-kafkacat \
+           kafkacat -b kafka:29092 \
+                    -L
+
+#consume messages
+docker run --tty \
+           --network waterkant_kafka_default \
+           confluentinc/cp-kafkacat \
+           kafkacat -b kafka:29092 \
+                    -C -t waterkant
+```
 
 > Summary: 30
 # Part 2: Ksql
@@ -43,7 +58,12 @@ docker-compose logs -f kafkaproducer
     - duration: 15
 > me: Explain Basic Commands of KSQL  
 > RUN select from stream  
+```sh
+# launch ksql-cli
+docker-compose exec ksql-cli ksql http://ksql-server:8088
+```
 ```sql
+# create ksql stream
 CREATE STREAM waterkantsql 
     (name VARCHAR
      , workshop VARCHAR
@@ -51,24 +71,39 @@ CREATE STREAM waterkantsql
 WITH (KAFKA_TOPIC='waterkant'
     , VALUE_FORMAT='JSON');
 
+# describe ksql stream
+DESCRIBE EXTENDED waterkantsql;
+
+# stream events from ksql
 SELECT * FROM waterkantsql;
 ```
 > CREATE TABLE FROM stream  
 ```sql
+CREATE TABLE waterkant_agg AS
+  SELECT rowkey,
+         COUNT(*)
+  FROM waterkantsql
+  GROUP BY rowkey;
 
+SELECT * FROM waterkant_agg;
 ```
+> Play around with some aggregation options:
+* Where clauses
+* Window functions
+Examples:
+https://docs.confluent.io/current/ksql/docs/developer-guide/aggregate-streaming-data.html
 
 > Summary: 15  
 > Total: 45
 
 ## mytodo:
-1. setup docker env
-* confluent kafka
-* producer service
-* consumer service
+<!-- 1. setup docker env -->
+<!-- * confluent kafka -->
+<!-- * producer service -->
+<!-- * consumer service -->
 * kafkaManager
-* ksql server
-* add kafkacat node
+<!-- * ksql server -->
+<!-- * add kafkacat node -->
 
 2. write documentation and detailed steps + commands
 
