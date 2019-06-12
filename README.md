@@ -1,3 +1,9 @@
+# Waterkant Festival Workshop - Event Streaming with Kafka
+[Waterkant.sh Workshop](https://waterkant19.sched.com/event/POxL/event-streaming-with-kafka)
+
+This repository is created as a guideline for the kafka event streaming workshop at the Waterkant.sh Festival 2019 in Kiel.
+Goal of this workshop is an introduction to Kafka and the possibilities it serves. Since Kafka is a huge tool and has a lot of features we will concentrate on a simple and basic setup and go through several usecases together.
+
 # Part 1: Launch Kafka
 In the first part of our workshop we will launch a fresh kafka cluster on our local docker environment.
 So make sure that you have docker installed and it has sufficient memory per container. max 1GB per Container should be sufficient.  
@@ -78,18 +84,26 @@ docker run --tty \
 ```
 Stop here :no_entry:
 
-> Summary: 30
-# Part 2: Ksql
-4. KSQL
-    - duration: 15
-> me: Explain Basic Commands of KSQL  
-> RUN select from stream  
+# Part 2: KSQL 
+KSQL is short for Kafka SQL and let's you write regular SQL queries directly on your streaming data inside of Kafka.  
+It is possible to join streams, aggregate data from topics and store them in another topic. You can also create compacted tables using kafka which will always show the most recent version of each key in a topic.
+It is pretty much SQL just live and as a stream.
 ```sh
-# launch ksql-cli
+# KSQL needs a KSQL Server to operate, we launched this one as part of our docker-compose file in the very beginning already. So yours should be up and running.
+# You can check this either by running a HTTP request against the KSQL API:
+curl -sX GET "http://localhost:8088/info"
+# or you can get the logs of the ksql server
+docker-compose logs -f ksql-server
+
+# Now we will launch the KSQL Cli and run some Commands.
 docker-compose exec ksql-cli ksql http://ksql-server:8088
+# you should be able to see a CLI that let's you run commands like this:
+show streams;
 ```
 ```sql
-# create ksql stream
+# Since we know KSQL Server and CLI are up and running it is time to test some SQL.
+# First of all we need to create a Stream on top of our Kafka topic. This way KSQL 
+# knows the content of the topic and how the data is formated (f.e. Json, Avro, Bytes).
 CREATE STREAM waterkantsql 
     (name VARCHAR
      , workshop VARCHAR
@@ -97,14 +111,21 @@ CREATE STREAM waterkantsql
 WITH (KAFKA_TOPIC='waterkant'
     , VALUE_FORMAT='JSON');
 
-# describe ksql stream
+# We can check if the stream looks the way we wanted to have it by describing it. 
+# This will output some information about system rows (f.e. rowkey) and other settings.
 DESCRIBE EXTENDED waterkantsql;
 
-# stream events from ksql
+# Time to check out if there is actually data arriving in our stream. Given that your 
+# producer is still up and running you should see data flowing into this stream constantly.
 SELECT * FROM waterkantsql;
 ```
-> CREATE TABLE FROM stream  
+Stop here :no_entry:
+
 ```sql
+# Finaly concept we are going to look at are compacted streams, aka tables. 
+# Tables are kafka topic that have a unique key. So whenever a message with the same key is published
+# the previous record is being deprecated and consumers only receive the new one. In the example
+# we combine this with a regular count(). This will return us the most recent count for each key.
 CREATE TABLE waterkant_agg AS
   SELECT rowkey,
          COUNT(*)
@@ -112,27 +133,15 @@ CREATE TABLE waterkant_agg AS
   GROUP BY rowkey;
 
 SELECT * FROM waterkant_agg;
+# You will see the flow of aggregated values in the stream. 
+# But it is also possible to filter down to a specific rowkey
+SELECT * FROM waterkant_agg where rowkey = 'water';
 ```
-> Play around with some aggregation options:
-* Where clauses
-* Window functions
-Examples:
-https://docs.confluent.io/current/ksql/docs/developer-guide/aggregate-streaming-data.html
 
-> Summary: 15  
-> Total: 45
+You have learned the basic principles of kafka and ksql and are free to try out anything that comes to your mind. I recommend trying out different aggregations and other possibilities of KSQL. You can find some hints here:
 
-## mytodo:
-<!-- 1. setup docker env -->
-<!-- * confluent kafka -->
-<!-- * producer service -->
-<!-- * consumer service -->
-* kafkaManager
-<!-- * ksql server -->
-<!-- * add kafkacat node -->
 
-2. write documentation and detailed steps + commands
+[Aggregate Streaming Data](https://docs.confluent.io/current/ksql/docs/developer-guide/aggregate-streaming-data.html)
 
-3. publish and test
-
-3. print handouts
+Also you could try to update the producer to send a second event with the same key values but different data and then join it in KSQL. 
+#### To infinity and beyond!
