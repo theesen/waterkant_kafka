@@ -3,7 +3,9 @@ In the first part of our workshop we will launch a fresh kafka cluster on our lo
 So make sure that you have docker installed and it has sufficient memory per container. max 1GB per Container should be sufficient.  
 
 After Part 1 you should be able to start Kafka, make sure it is running, create topics and publish/consume data from kafka with different tools. Feel free to play around with the tools provided and try out different things.
-If something is broken beyond repair you can always destroy your environment using `docker-compose down -v` and then start from scratch.
+If something is broken beyond repair you can always destroy your environment using `docker-compose down -v` and then start from scratch.  
+
+__Important:__ Whenever it says `Stop here` :stop:
 ## Create Cluster
 ```sh
 # Launch Kafka, Zookeeper, KSQLServer and KafkaProducer
@@ -27,8 +29,14 @@ docker-compose logs kafka | grep started
 #       - replication-factor: Defines how often each partition is duplicated to prevent dataloss. Since we only have one node, we can not have more then 1 replication
 #       - partitions: Defines the paralelism of the topic. This configuration limits how many consumer instances can connect at the same time to the topic.
 #       - topic: Name of the topic in kafka
-docker-compose exec kafka kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 3 --topic waterkant
+docker-compose exec kafka kafka-topics \
+            --create \
+            --zookeeper zookeeper:2181 \
+            --replication-factor 1 \
+            --partitions 3 \
+            --topic waterkant
 ```
+__Important:__ Wait here for instrucitions.
 
 ## Produce Messages
 WAIT: Before we continue let us take a look at the `kafkaproducer` code together.
@@ -41,6 +49,7 @@ docker-compose logs kafkaproducer
 docker-compose up --build -d
 docker-compose logs -f kafkaproducer
 ```
+__Important:__ Wait here for instrucitions.
 
 ## Consume messages using kafkacat
 ```sh
@@ -67,6 +76,7 @@ docker run --tty \
 
 # If you want to exit the consumer just hit `CTRL+C`
 ```
+__Important:__ Wait here for instrucitions.
 
 > Summary: 30
 # Part 2: Ksql
