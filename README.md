@@ -5,7 +5,7 @@ So make sure that you have docker installed and it has sufficient memory per con
 After Part 1 you should be able to start Kafka, make sure it is running, create topics and publish/consume data from kafka with different tools. Feel free to play around with the tools provided and try out different things.
 If something is broken beyond repair you can always destroy your environment using `docker-compose down -v` and then start from scratch.  
 
-__Important:__ Whenever it says `Stop here` :+1:
+__Important:__ Whenever it says: Stop here :no_entry: wait for further instructions
 ## Create Cluster
 ```sh
 # Launch Kafka, Zookeeper, KSQLServer and KafkaProducer
@@ -36,7 +36,7 @@ docker-compose exec kafka kafka-topics \
             --partitions 3 \
             --topic waterkant
 ```
-__Important:__ Wait here for instrucitions.
+Stop here :no_entry:
 
 ## Produce Messages
 WAIT: Before we continue let us take a look at the `kafkaproducer` code together.
@@ -49,7 +49,7 @@ docker-compose logs kafkaproducer
 docker-compose up --build -d
 docker-compose logs -f kafkaproducer
 ```
-__Important:__ Wait here for instrucitions.
+Stop here :no_entry:
 
 ## Consume messages using kafkacat
 ```sh
@@ -76,7 +76,7 @@ docker run --tty \
 
 # If you want to exit the consumer just hit `CTRL+C`
 ```
-__Important:__ Wait here for instrucitions.
+Stop here :no_entry:
 
 > Summary: 30
 # Part 2: Ksql
