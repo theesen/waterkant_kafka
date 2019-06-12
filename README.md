@@ -1,55 +1,71 @@
-# Content
-## Part 1: kafka basics
-0. Introduction
-    - duration: 7  
-    - prepare: What is Kafka,  
-    Why we use kafka
-> me: Introduction into workshop, introduce myself and what I am doing
-> me: Show architecture overview (search for picture of architecture)  
-> 2min: Sample useCases (real time monitoring, metric collection & aggregation, data offloading)  
+# Part 1: Launch Kafka
+In the first part of our workshop we will launch a fresh kafka cluster on our local docker environment.
+So make sure that you have docker installed and it has sufficient memory per container. max 1GB per Container should be sufficient.  
 
-1. Install and Run Kafka 
-    - duration: 5 + 5  
-> me: Walk through docker-compose file, share link to github repo
-> Task: Everybody needs to launch kafka successfully docker-compose
+After Part 1 you should be able to start Kafka, make sure it is running, create topics and publish/consume data from kafka with different tools. Feel free to play around with the tools provided and try out different things.
+If something is broken beyond repair you can always destroy your environment using `docker-compose down -v` and then start from scratch.
+## Create Cluster
 ```sh
+# Launch Kafka, Zookeeper, KSQLServer and KafkaProducer
+docker-compose up --build -d
+
+# Check if Zookeeper started successfully
+# should return 'imok'
+echo "echo ruok | nc localhost 2181" | docker exec -i $(docker-compose ps -q zookeeper) /bin/sh -
+
+# Check if Kafka Started succesfully
+# should return 'INFO [KafkaServer id=1] started (kafka.server.KafkaServer)'
 docker-compose logs kafka | grep started
 ```
-> Task: Create a Topic
+
+## Create Topics
 ```sh
+# Create a new topic on Kafka
+# should return 'Created topic "waterkant".'
+# Parameters:
+#       - zookeeper: Zookeeper host used for metadata storage
+#       - replication-factor: Defines how often each partition is duplicated to prevent dataloss. Since we only have one node, we can not have more then 1 replication
+#       - partitions: Defines the paralelism of the topic. This configuration limits how many consumer instances can connect at the same time to the topic.
+#       - topic: Name of the topic in kafka
 docker-compose exec kafka kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 3 --topic waterkant
 ```
 
-2. Pub messages using kafka sample producer
-    - duration: 5 + 10
-    - prepare: Walk through sample python producer  
-    Consume Events using cli  
-    Consume Events using python app  
-> me: Walk through python producer  
-> me: enable kafkaproducer in docker-compose
-> launch producer
+## Produce Messages
+WAIT: Before we continue let us take a look at the `kafkaproducer` code together.
 ```sh
+# Last time we launched the producer it failed right away. Check out the logs of the first run:
+docker-compose logs kafkaproducer
+
+# The output should show a message like: 'Unable to produce message: Local: Unknown topic'. This is because our producer started before we created the topic.
+# So there was nothing he could publish the messages to. If we restart the docker container it should work smoothly. Run the following command and observe the logs again
 docker-compose up --build -d
-```
-> Check out Producer Logs
-```sh
 docker-compose logs -f kafkaproducer
 ```
-> use kafkacat to consume messages (add command to documentation)  
+
+## Consume messages using kafkacat
 ```sh
-#list topics & partitions
+# As you can see in the logs you are succesfully publishing messages to Kafka. But we also want to consume some messages.
+# To do that we will make use of a cool utility tool called kafkacat. It will help you maintain kafka clusters in a lot of scenarios.
+# Kafkacat is a commandline utility and there is a container with all requirements installed available.
+# Let's list all available topics in Kafka for example:
 docker run --tty \
            --network waterkant_kafka_default \
            confluentinc/cp-kafkacat \
            kafkacat -b kafka:29092 \
                     -L
 
-#consume messages
+# You should see a message like this: 'topic "waterkant" with 3 partitions'
+# Check out the number of partitions and on which brokers they reside
+
+# Besides listing available kafka topics we can also produce or consume data with this tool.
+# Let's consume our fresh data using kafkacat:
 docker run --tty \
            --network waterkant_kafka_default \
            confluentinc/cp-kafkacat \
            kafkacat -b kafka:29092 \
                     -C -t waterkant
+
+# If you want to exit the consumer just hit `CTRL+C`
 ```
 
 > Summary: 30
