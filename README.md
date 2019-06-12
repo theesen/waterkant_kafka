@@ -5,7 +5,7 @@ So make sure that you have docker installed and it has sufficient memory per con
 After Part 1 you should be able to start Kafka, make sure it is running, create topics and publish/consume data from kafka with different tools. Feel free to play around with the tools provided and try out different things.
 If something is broken beyond repair you can always destroy your environment using `docker-compose down -v` and then start from scratch.  
 
-__Important:__ Whenever it says `Stop here` :stop:
+__Important:__ Whenever it says `Stop here` :+1:
 ## Create Cluster
 ```sh
 # Launch Kafka, Zookeeper, KSQLServer and KafkaProducer
