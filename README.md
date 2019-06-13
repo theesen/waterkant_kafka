@@ -6,6 +6,14 @@ Goal of this workshop is an introduction to Kafka and the possibilities it serve
 
 During this workshop we will heavily rely on the Confluent Platform. Confluent is a company that was founded to provide Kafka as a Service. They also open source a lot of their products and contribute to Core Kafka. You can run all of the examples below on bare metal Kafka as well. It is mostly convenience, that we use Confluent Kafka.
 
+
+# Requirements:
+Install Docker: 
+* [OS X Installation](https://docs.docker.com/docker-for-mac/)
+* [Windows Installation](https://docs.docker.com/docker-for-windows/)
+* [Ubuntu Installation](https://docs.docker.com/install/linux/docker-ce/ubuntu/)
+* Any other OS users probably know how to do it without me providing some links :)
+
 # Part 1: Launch Kafka
 In the first part of our workshop we will launch a fresh Kafka cluster on your local docker environment.
 So make sure that you have docker installed and it has sufficient memory per container. (roughly 1GB per Container)  
