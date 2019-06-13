@@ -4,6 +4,8 @@
 This repository is created as a guideline for the Kafka event streaming workshop at the Waterkant.sh Festival 2019 in Kiel.
 Goal of this workshop is an introduction to Kafka and the possibilities it serves. Since Kafka is a huge tool and has a lot of features we will concentrate on a basic setup and go through several use cases together.
 
+During this workshop we will heavily rely on the Confluent Platform. Confluent is a company that was founded to provide Kafka as a Service. They also open source a lot of their products and contribute to Core Kafka. You can run all of the examples below on bare metal Kafka as well. It is mostly convenience, that we use Confluent Kafka.
+
 # Part 1: Launch Kafka
 In the first part of our workshop we will launch a fresh Kafka cluster on your local docker environment.
 So make sure that you have docker installed and it has sufficient memory per container. (roughly 1GB per Container)  
@@ -69,6 +71,8 @@ docker-compose logs kafkaproducer
 docker-compose up --build -d
 docker-compose logs -f kafkaproducer
 ```
+Helpful Links:
+* [Confluent Kafka Client Library](https://docs.confluent.io/current/clients/index.html)
 
 ## Consume messages using kafkacat
 ```sh
